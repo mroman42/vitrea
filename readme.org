@@ -3,7 +3,8 @@
 Lenses and optics via the *profunctor representation theorem*. You can learn about
 this representation in the following articles.
 
- * Milewski (2017), [[https://bartoszmilewski.com/2017/07/07/profunctor-optics-the-categorical-view/]["Profunctor optics: the categorical view"]].
- * Boisseau, Gibbons (2018), [[https://www.cs.ox.ac.uk/jeremy.gibbons/publications/proyo.pdf]["What you needa know about Yoneda"]].
-
+ * [[https://bartoszmilewski.com/2017/07/07/profunctor-optics-the-categorical-view/]["Profunctor optics: the categorical view"]], Milewski (2017).
+ * [[https://www.cs.ox.ac.uk/jeremy.gibbons/publications/proyo.pdf]["What you needa know about Yoneda"]], Boisseau, Gibbons (2018).
+ * [[https://arxiv.org/abs/1809.00738]["Categories of optics"]], Riley (2018).
+ * [[nolink]["Profunctor optics: a categorical update"]], Clarke, Elkins, Gibbons, Loregian, Milewski, Pillmore, Román (2019).
 
