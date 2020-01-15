@@ -17,7 +17,7 @@ maintainer:          mromang08@gmail.com
 extra-source-files:  CHANGELOG.md, README.md
 
 library
-  exposed-modules:     Example, Vitrea
+  exposed-modules:     Main
   -- other-modules:
   other-extensions:    AllowAmbiguousTypes
                      , ConstraintKinds

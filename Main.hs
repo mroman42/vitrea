@@ -148,24 +148,44 @@ instance Category Any (->) where
 
 newtype Nat f g = Nat { nat :: forall x . f x -> g x }
 
-instance Category Applicative Nat where
+instance Category Functor Nat where
   unit = Nat id
   comp (Nat h) (Nat k) = Nat (h . k)
+
+instance Category Applicative Nat where
+  unit = unit @Functor
+  comp = comp @Functor
+
+instance Category Traversable Nat where
+  unit = unit @Functor
+  comp = comp @Functor
 
 newtype App f a = App { getApp :: f a }
 
 instance Bifunctor Any (->) Any (->) Any (->) (,) where
   bimap f g (x,y) = (f x , g y)
 
-instance Bifunctor Applicative Nat Applicative Nat Applicative Nat Compose where
+instance Bifunctor Functor Nat Functor Nat Functor Nat Compose where
   bimap (Nat h) (Nat k) = Nat (Compose . fmap k . h . getCompose)
+
+instance Bifunctor Applicative Nat Applicative Nat Applicative Nat Compose where
+  bimap = bimap @Functor @Nat @Functor @Nat @Functor @Nat @Compose
+
+instance Bifunctor Traversable Nat Traversable Nat Traversable Nat Compose where
+  bimap = bimap @Functor @Nat @Functor @Nat @Functor @Nat @Compose
+
 
 instance Bifunctor Any (->) Any (->) Any (->) Either where
   bimap f _ (Left x)  = Left  (f x)
   bimap _ g (Right x) = Right (g x)
 
-instance Bifunctor Applicative Nat Any (->) Any (->) App where
+instance Bifunctor Functor Nat Any (->) Any (->) App where
   bimap (Nat h) f = App . fmap f . h . getApp
+instance Bifunctor Applicative Nat Any (->) Any (->) App where
+  bimap = bimap @Functor @Nat @Any @(->) @Any @(->) @App
+instance Bifunctor Traversable Nat Any (->) Any (->) App where
+  bimap = bimap @Functor @Nat @Any @(->) @Any @(->) @App
+
 
 instance MonoidalCategory Any (->) (,) () where
   alpha (x,(y,z)) = ((x,y),z)
@@ -183,7 +203,7 @@ instance MonoidalCategory Any (->) Either Void where
   rho = either absurd (\x -> x)
   rhoinv = Right
 
-instance MonoidalCategory Applicative Nat Compose Identity where
+instance MonoidalCategory Functor Nat Compose Identity where
   alpha = Nat (Compose . Compose . fmap getCompose . getCompose)
   alphainv = Nat (Compose . fmap Compose . getCompose . getCompose)
   lambda = Nat (fmap runIdentity . getCompose)
@@ -191,11 +211,39 @@ instance MonoidalCategory Applicative Nat Compose Identity where
   rho = Nat (runIdentity . getCompose)
   rhoinv = Nat (Compose . Identity)
 
-instance MonoidalAction Applicative Nat Compose Identity Any (->) App where
+instance MonoidalCategory Applicative Nat Compose Identity where
+  alpha = alpha @Functor @Nat @Compose @Identity
+  alphainv = alphainv @Functor @Nat @Compose @Identity
+  lambda = lambda @Functor @Nat @Compose @Identity
+  lambdainv = lambdainv @Functor @Nat @Compose @Identity
+  rho = rho @Functor @Nat @Compose @Identity
+  rhoinv = rhoinv @Functor @Nat @Compose @Identity
+
+instance MonoidalCategory Traversable Nat Compose Identity where
+  alpha = alpha @Functor @Nat @Compose @Identity
+  alphainv = alphainv @Functor @Nat @Compose @Identity
+  lambda = lambda @Functor @Nat @Compose @Identity
+  lambdainv = lambdainv @Functor @Nat @Compose @Identity
+  rho = rho @Functor @Nat @Compose @Identity
+  rhoinv = rhoinv @Functor @Nat @Compose @Identity
+
+instance MonoidalAction Functor Nat Compose Identity Any (->) App where
   unitor = runIdentity . getApp
   unitorinv = App . Identity
   multiplicator = App . Compose . fmap getApp . getApp
   multiplicatorinv = App . fmap App . getCompose . getApp
+
+instance MonoidalAction Applicative Nat Compose Identity Any (->) App where
+  unitor = unitor @Functor @Nat @Compose @Identity @Any @(->) @App
+  unitorinv = unitorinv @Functor @Nat @Compose @Identity @Any @(->) @App
+  multiplicator = multiplicator @Functor @Nat @Compose @Identity @Any @(->) @App
+  multiplicatorinv = multiplicatorinv @Functor @Nat @Compose @Identity @Any @(->) @App
+
+instance MonoidalAction Traversable Nat Compose Identity Any (->) App where
+  unitor = unitor @Functor @Nat @Compose @Identity @Any @(->) @App
+  unitorinv = unitorinv @Functor @Nat @Compose @Identity @Any @(->) @App
+  multiplicator = multiplicator @Functor @Nat @Compose @Identity @Any @(->) @App
+  multiplicatorinv = multiplicatorinv @Functor @Nat @Compose @Identity @Any @(->) @App
 
 instance (MonoidalCategory objm m o i) => MonoidalAction objm m o i objm m o where
   unitor = rho @objm @m
@@ -314,6 +362,13 @@ mkMonadicLens v u =
   ex2prof @Any @(->) @Any @(Kleisli m) @Any @(->) @(,) @() @(,) @(,)
   $ Optic (\a -> (a , v a)) (Kleisli (uncurry u))
 
+-- Traversals as optics for the action of traversable functors.
+type Traversal a s = ProfOptic Any (->) Any (->) Traversable Nat Compose Identity App App a a s s
+mkTraversal :: forall a b s t . (s -> [a]) -> ([a] -> s) -> Traversal a s
+mkTraversal l r =
+  ex2prof @Any @(->) @Any @(->) @Traversable @Nat @Compose @Identity @App @App
+  $ Optic (App . l) (r . getApp)
+  
 
 -- COMBINATORS
 
@@ -382,6 +437,23 @@ instance (Monad m) => Profunctor Any (->) Any (Kleisli m) (Updating m a b) where
 instance (Monad m) => Tambara Any (->) Any (Kleisli m) (Any) (->) (,) () (,) (,) (Updating m a b) where
   tambara (Update u) = Update (\b (w , x) -> fmap ((,) w) $ u b x)
 
+-- The class of profunctors that admit the 'over' operator.
+newtype Replacing a b s t = Replace
+  { getReplace :: (a -> b) -> (s -> t) }
+instance Profunctor Any (->) Any (->) (Replacing a b) where
+  dimap l r (Replace u) = Replace (\f -> r . u f . l)
+
+instance Tambara Any (->) Any (->) Any (->) (,) () (,) (,) (Replacing a b) where
+  tambara (Replace u) = Replace (fmap . u)
+instance Tambara Any (->) Any (->) Any (->) Either Void Either Either (Replacing a b) where
+  tambara (Replace u) = Replace (fmap . u)
+instance Tambara Any (->) Any (->) Functor Nat Compose Identity App App (Replacing a b) where
+  tambara (Replace u) = Replace ((\f -> App . fmap f . getApp) . u)
+instance Tambara Any (->) Any (->) Applicative Nat Compose Identity App App (Replacing a b) where
+  tambara = tambara @Any @(->) @Any @(->) @Functor @Nat @Compose @Identity @App @App @(Replacing a b)
+instance Tambara Any (->) Any (->) Traversable Nat Compose Identity App App (Replacing a b) where
+  tambara = tambara @Any @(->) @Any @(->) @Functor @Nat @Compose @Identity @App @App @(Replacing a b)
+
 
 -- Inspired by the "view" operator of Kmett et al's lens library.  The
 -- fixity and semantics are such that subsequent field accesses can be
@@ -403,6 +475,13 @@ infixl 8 ?.
 infixl 8 .~
 (.~) :: (Setting a b a b -> Setting a b s t) -> b -> s -> t
 (.~) l b = getSet (l $ Setting id) (\_ -> b)
+
+-- Inspired by the "over" operator of Kmett et al's lens library.  The
+-- fixity and semantics are such that subsequent field accesses can be
+-- performed with 'Prelude..'.
+infixl 8 %~
+(%~) :: (Replacing a b a b -> Replacing a b s t) -> (a -> b) -> (s -> t)
+(%~) l f = getReplace (l $ Replace id) $ f
 
 -- A "classify" operator. The fixity and semantics are such that
 -- subsequent field accesses can be performed with 'Prelude..'.
@@ -671,3 +750,15 @@ box = mkMonadicLens @IO openBox $ \ u b -> do
   return $ Box b
 
 -- EXAMPLE 4: Traversals
+each :: Traversal a [a]
+each = mkTraversal id id
+
+uppercase :: String -> String
+uppercase = fmap toUpper
+
+mail :: [String]
+mail =
+ [ "43 Adlington Rd, Wilmslow, United Kingdom"
+ , "26 Westcott Rd, Princeton, USA"
+ , "St James's Square, London, United Kingdom"
+ ]
