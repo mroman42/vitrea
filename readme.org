@@ -100,3 +100,7 @@ aggregate :: Kaleidoscope Float Measurements
   Iris Versicolor; Sepal (5.843, 3.054); Petal (3.758, 1.198)
 #+end_src haskell
 
+
+** About
+/This is a complete rewriting from the first prototype of [[https://github.com/mroman42/vitrea-prototype-1][vitrea]], maintained by @emilypi and @mroman42./
+
