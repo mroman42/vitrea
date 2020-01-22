@@ -18,6 +18,11 @@ extra-source-files:  CHANGELOG.md, README.md
 
 library
   exposed-modules:     Main
+                     , Categories
+                     , CategoriesInstances
+                     , Tambara
+                     , Optics
+                     , Combinators
   -- other-modules:
   other-extensions:    AllowAmbiguousTypes
                      , ConstraintKinds
