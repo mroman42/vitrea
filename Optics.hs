@@ -26,7 +26,6 @@
 module Optics where
 
 import Prelude hiding (map)
-import Data.Constraint
 import Data.Function
 import Data.Either
 import Control.Monad.Writer hiding (Any)

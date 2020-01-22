@@ -23,9 +23,9 @@
 {-# LANGUAGE QuantifiedConstraints     #-}
 {-# LANGUAGE UndecidableSuperClasses   #-}
 
-import Prelude hiding (map)
-import Data.Constraint
+module Main where
 
+import Prelude hiding (map)
 import Data.Function
 import Data.Either
 import Control.Monad.Writer hiding (Any)
@@ -306,3 +306,9 @@ mail =
  , "26 Westcott Rd, Princeton, USA"
  , "St James's Square, London, United Kingdom"
  ]
+
+
+-- Main
+main :: IO ()
+main = return ()
+
