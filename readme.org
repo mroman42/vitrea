@@ -10,7 +10,7 @@ this representation in the following articles.
  
 All the optics on this library are particular cases of a single unified definition. All the combinators on this library are instantiations of the profunctor optic to a particular Tambara module.
 
-The usual notions of lawfulness (as in [[https://arxiv.org/abs/1809.00738]["Categories of optics"]]) apply to non-mixed optics (lenses, prisms, traversals...); but there is not an agreement on what the natural notion of laws for a mixed optic should be apart from specific cases (like monadic lenses).
+The usual notions of lawfulness (as in [[https://arxiv.org/abs/1809.00738]["Categories of optics"]]) apply to non-mixed optics (lenses, prisms, traversals...). However, there is not a consensus on what the natural notion of laws for a mixed optic should be, apart from specific cases like monadic lenses.
  
 
 ** Examples
