@@ -23,6 +23,17 @@
 {-# LANGUAGE QuantifiedConstraints     #-}
 {-# LANGUAGE UndecidableSuperClasses   #-}
 
+{-|
+Module      : Main
+Description : Usage examples
+Copyright   : (c) Mario Román, 2020
+License     : GPL-3
+Maintainer  : mromang08@gmail.com
+Stability   : experimental
+Portability : POSIX
+-}
+
+
 module Main where
 
 import Prelude hiding (map)

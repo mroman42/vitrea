@@ -23,6 +23,18 @@
 {-# LANGUAGE QuantifiedConstraints     #-}
 {-# LANGUAGE UndecidableSuperClasses   #-}
 
+{-|
+Module      : Combinators
+Description : Lens-like combinators in terms of Tambara modules.
+Copyright   : (c) Mario Román, 2020
+License     : GPL-3
+Maintainer  : mromang08@gmail.com
+Stability   : experimental
+Portability : POSIX
+
+Provides combinators for the library of optics in terms of Tambara modules.
+-}
+
 module Combinators where
 
 import Prelude hiding (map)
@@ -38,13 +50,10 @@ import Data.List
 import Data.Monoid hiding (Any)
 import Text.Printf
 
-
 import Categories
 import CategoriesInstances
 import Tambara
 
-
--- COMBINATORS
 
 -- | Viewing is a profunctor that can be used to implement a 'view'
 -- operation.  Viewing is a Tambara module for all the optics that
@@ -94,7 +103,7 @@ instance (Monad m) => Profunctor Any (->) Any (->) (Classifying m a b) where
 instance (Monad m) => Tambara Any (->) Any (->) (Algebra m) (->) (,) () (,) (,) (Classifying m a b) where 
   tambara (Classifying f) = Classifying (\w b -> (algebra (fmap fst w) , f (fmap snd w) b))
 
--- The class of profunctors that admit the 'aggregate' operator.
+-- | Aggregating is a Tambara module for the optics that admit an 'aggregate' operator.
 newtype Aggregating a b s t = Aggregate
   { getAggregate :: [s] -> ([a] -> b) -> t }
 instance Profunctor Any (->) Any (->) (Aggregating a b) where
@@ -106,7 +115,7 @@ instance Tambara Any (->) Any (->) (Algebra []) (->) (,) () (,) (,) (Aggregating
 instance Tambara Any (->) Any (->) Applicative Nat Compose Identity App App (Aggregating a b) where
   tambara (Aggregate h) = Aggregate (\u f -> App $ pure (flip h f) <*> sequenceA (fmap getApp u))
 
--- The class of profunctors that admit the 'update' operator.
+-- | Updating is a Tambara module for the optics admitting an 'update' operator.
 newtype Updating m a b s t = Update
   { getUpdate :: (Monad m) => b -> s -> m t }
 instance (Monad m) => Profunctor Any (->) Any (->) (Updating m a b) where
@@ -117,7 +126,7 @@ instance (Monad m) => Profunctor Any (->) Any (Kleisli m) (Updating m a b) where
 instance (Monad m) => Tambara Any (->) Any (Kleisli m) (Any) (->) (,) () (,) (,) (Updating m a b) where
   tambara (Update u) = Update (\b (w , x) -> fmap ((,) w) $ u b x)
 
--- The class of profunctors that admit the 'over' operator.
+-- | Replacing is a Tambara module for the optics admitting an 'over' operator.
 newtype Replacing a b s t = Replace
   { getReplace :: (a -> b) -> (s -> t) }
 instance Profunctor Any (->) Any (->) (Replacing a b) where

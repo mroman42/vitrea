@@ -23,6 +23,18 @@
 {-# LANGUAGE QuantifiedConstraints     #-}
 {-# LANGUAGE UndecidableSuperClasses   #-}
 
+{-|
+Module      : Categories, Instances
+Description : Instances of constrained categories
+Copyright   : (c) Mario Román, 2020
+License     : GPL-3
+Maintainer  : mromang08@gmail.com
+Stability   : experimental
+Portability : POSIX
+
+Provides instances for the definition of category constrained on the objects.
+-}
+
 module CategoriesInstances where
 
 import Data.Functor.Compose

@@ -8,7 +8,7 @@ let
       mkDerivation {
         pname = "vitrea";
         version = "0.1.0.0";
-        src = ./source;
+        src = ./.;
         libraryHaskellDepends = [ base mtl profunctors ];
         homepage = "https://github.com/mroman42/vitrea";
         license = stdenv.lib.licenses.mit;
