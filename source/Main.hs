@@ -111,6 +111,19 @@ address = mkPrism matchAddress buildAddress
 place :: String
 place = "221b Baker St, London, UK"
 
+-- EXAMPLE 1.2. Timestamped type-variant lens.
+data Timestamped a = Timestamped
+  { timestamp' :: Int
+  , contents' :: a }
+
+contents :: Lens' a b (Timestamped a) (Timestamped b)
+contents = mkLens' viewContents updateContents
+  where
+    viewContents :: Timestamped a -> a
+    viewContents = contents'
+    updateContents :: Timestamped a -> b -> Timestamped b
+    updateContents x b = x {contents' = b}
+
 -- EXAMPLE 2: Kaleidoscope and algebraic lenses
 data Species = None | Setosa | Versicolor | Virginica | Mixed
 

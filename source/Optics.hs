@@ -69,6 +69,14 @@ mkLens v u =
   ex2prof @Any @(->) @Any @(->) @Any @(->) @(,) @()
   $ Optic (\a -> (a , v a)) (\(s,b) -> u s b)
 
+-- | Type-variant version.
+type Lens' a b s t = ProfOptic Any (->) Any (->) Any (->) (,) () (,) (,) a b s t
+mkLens' :: (s -> a) -> (s -> b -> t) -> Lens' a b s t
+mkLens' v u =
+  ex2prof @Any @(->) @Any @(->) @Any @(->) @(,) @()
+  $ Optic (\a -> (a , v a)) (\(s,b) -> u s b)
+
+
 -- | Prisms are optics for the action of the category on itself via the
 -- coproduct.
 type Prism a s = ProfOptic Any (->) Any (->) Any (->) Either Void Either Either a a s s
