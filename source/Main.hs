@@ -370,13 +370,13 @@ box = mkMonadicLens @IO openBox $ \ u b -> do
 
 -- EXAMPLE 4: Traversals
 each :: Traversal a [a]
-each = mkTraversal id id
+each = mkTraversal (\x -> (x , id))
 
 uppercase :: String -> String
 uppercase = fmap toUpper
 
-mail :: [String]
-mail =
+places :: [String]
+places =
  [ "43 Adlington Rd, Wilmslow, United Kingdom"
  , "26 Westcott Rd, Princeton, USA"
  , "St James's Square, London, United Kingdom"

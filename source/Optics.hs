@@ -115,7 +115,19 @@ mkMonadicLens v u =
 
 -- | Traversals as optics for the action of traversable functors.
 type Traversal a s = ProfOptic Any (->) Any (->) Traversable Nat Compose Identity App App a a s s
-mkTraversal :: forall a b s t . (s -> [a]) -> ([a] -> s) -> Traversal a s
-mkTraversal l r =
+mkTraversal :: forall a b s t . (s -> ([a], [a] -> s)) -> Traversal a s
+mkTraversal ext = mkTraversal2 (\s -> Split (fst (ext s)) s) (\(Split la s) -> snd (ext s) la)
+
+data Split s a = Split [a] s
+instance Functor (Split s) where
+  fmap f (Split l s) = Split (fmap f l) s
+instance Foldable (Split s) where
+  foldr f z (Split l s) = foldr f z l
+instance Traversable (Split s) where
+  traverse f (Split l s) = fmap (flip Split s) (traverse f l)
+
+
+mkTraversal2 :: forall a s f . Traversable f => (s -> f a) -> (f a -> s) -> Traversal a s
+mkTraversal2 l r =
   ex2prof @Any @(->) @Any @(->) @Traversable @Nat @Compose @Identity @App @App
   $ Optic (App . l) (r . getApp)
