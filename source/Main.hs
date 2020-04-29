@@ -62,11 +62,36 @@ data Address = Address
   , country' :: String
   } deriving (Show)
 
-home :: String
-home = "221b Baker St, London, UK"
+data Person = Person
+  { name' :: String
+  , home' :: Address
+  } deriving (Show)
+
+sherlock :: Person
+sherlock = Person
+  { name' = "Sherlock Holmes"
+  , home' = Address
+    { street' = "221b Baker Street"
+    , city' = "London"
+    , country' = "UK" } }
+
+home :: Lens Address Person
+home = mkLens viewHome updateHome
+  where
+    viewHome :: Person -> Address
+    viewHome = home'
+
+    updateHome :: Person -> Address -> Person
+    updateHome p a = p {home' = a}
 
 street :: Lens String Address
-street = mkLens street' (\x y -> x {street' = y})
+street = mkLens viewStreet updateStreet
+  where
+    viewStreet :: Address -> String
+    viewStreet = street'
+
+    updateStreet :: Address -> String -> Address
+    updateStreet a s = a {street' = s}
 
 city :: Lens String Address
 city = mkLens city' (\x y -> x {city' = y})
