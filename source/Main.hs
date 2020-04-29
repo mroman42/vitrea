@@ -46,6 +46,7 @@ import Data.Void
 import Control.Monad
 import Data.Char
 import Data.List
+import Data.List.Split
 import Data.Monoid hiding (Any)
 import Text.Printf
 
@@ -97,21 +98,18 @@ city :: Lens String Address
 city = mkLens city' (\x y -> x {city' = y})
 
 address :: Prism Address String
-address = mkPrism matchPostal buildPostal
+address = mkPrism matchAddress buildAddress
   where
-    matchPostal :: String -> Either String Address 
-    matchPostal a = maybe (Left a) Right $ do
-      (street, b) <- readUntil ',' a
-      (city, c)   <- readUntil ',' (tail $ tail b)
-      return $ Address street city (tail $ tail c)
-    buildPostal :: Address -> String
-    buildPostal (Address s t c) = s ++ ", " ++ t ++ ", " ++ c
+    buildAddress :: Address -> String
+    buildAddress (Address s t c) = s ++ ", " ++ t ++ ", " ++ c
 
-    readUntil :: Char -> String -> Maybe (String , String)
-    readUntil c a = if elem c a
-      then Just (takeWhile (/= c) a, dropWhile (/= c) a)
-      else Nothing
+    matchAddress :: String -> Either String Address
+    matchAddress a = case splitOn ", " a of
+      [str, cty, ctr] -> Right (Address str cty ctr)
+      failure -> Left a
 
+place :: String
+place = "221b Baker St, London, UK"
 
 -- EXAMPLE 2: Kaleidoscope and algebraic lenses
 data Species = None | Setosa | Versicolor | Virginica | Mixed
