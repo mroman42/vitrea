@@ -187,3 +187,7 @@ infixl 8 >-
 -- | An "mupdate" operator. It is prepared to be used with do notation.
 mupdate :: (Monad m) => (Updating m a b a b -> Updating m a b s t) -> b -> s -> m t
 mupdate f = getUpdate $ f (Update (\b a -> return b))
+
+infixl 8 .!
+(.!) :: (Monad m) => (Updating m a b a b -> Updating m a b s t) -> b -> s -> m t
+(.!) = mupdate

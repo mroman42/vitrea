@@ -4,12 +4,12 @@ let
 
   inherit (nixpkgs) pkgs;
 
-  f = { mkDerivation, base, mtl, profunctors, stdenv, split }:
+  f = { mkDerivation, base, mtl, profunctors, stdenv, split, delay }:
       mkDerivation {
         pname = "vitrea";
         version = "0.1.0.0";
         src = ./.;
-        libraryHaskellDepends = [ base mtl profunctors split ];
+        libraryHaskellDepends = [ base mtl profunctors split delay ];
         homepage = "https://github.com/mroman42/vitrea";
         license = stdenv.lib.licenses.mit;
       };

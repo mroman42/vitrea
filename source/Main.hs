@@ -44,11 +44,13 @@ import Data.Functor.Identity
 import Data.Functor.Compose
 import Data.Void
 import Control.Monad
+import Control.Time
 import Data.Char
 import Data.List
 import Data.List.Split
 import Data.Monoid hiding (Any)
 import Text.Printf
+import Data.Time.Clock
 
 import Categories
 import CategoriesInstances
@@ -113,7 +115,8 @@ place = "221b Baker St, London, UK"
 
 -- EXAMPLE 1.2. Timestamped type-variant lens.
 data Timestamped a = Timestamped
-  { timestamp' :: Int
+  { created' :: UTCTime
+  , modified' :: UTCTime
   , contents' :: a }
 
 contents :: Lens' a b (Timestamped a) (Timestamped b)
@@ -330,6 +333,31 @@ iris = [
 
 
 -- EXAMPLE 3: Updating with monadic lenses.
+instance Show a => Show (Timestamped a) where
+  show (Timestamped created modified x) =
+        "Contents: " ++ show x ++
+     ",\nCreated:  " ++ show created ++
+     ",\nModified: " ++ show modified ++ "."
+
+stamp :: MonadicLens IO a b (Timestamped a) (Timestamped b)
+stamp = mkMonadicLens @IO viewContents updateStamp
+  where
+    viewContents :: Timestamped a -> a
+    viewContents = contents'
+
+    updateStamp :: Timestamped a -> b -> IO (Timestamped b)
+    updateStamp x b = do
+      currentTime <- getCurrentTime
+      return (x {contents' = b , modified' = currentTime})
+
+greeting :: IO (Timestamped String)
+greeting = do
+  t <- getCurrentTime
+  x <- pure (Timestamped t t ())
+  delay (2.5 :: Double)
+  x & stamp .! "hello, world!"
+  
+
 newtype Box a = Box { openBox :: a }
 
 instance Show a => Show (Box a) where
