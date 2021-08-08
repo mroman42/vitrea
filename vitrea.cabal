@@ -52,6 +52,7 @@ library
                      , mtl ^>=2.2.2
                      , profunctors
                      , split
+                     , time
 
   hs-source-dirs:    source
 

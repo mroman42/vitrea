@@ -44,7 +44,7 @@ import Data.Functor.Identity
 import Data.Functor.Compose
 import Data.Void
 import Control.Monad
-import Control.Time
+import Control.Concurrent
 import Data.Char
 import Data.List
 import Data.List.Split
@@ -153,7 +153,7 @@ instance Show Species where
 
 instance Show Measurements where
   show (Measurements sl sw pl pw) =
-    "(" ++ show sl ++ ", " ++ show sw ++ ", " 
+    "(" ++ show sl ++ ", " ++ show sw ++ ", "
         ++ show pl ++ ", " ++ show pw ++ ")"
 
 
@@ -174,7 +174,7 @@ aggregate = mkKaleidoscope $ \f l -> Measurements
   (f $ fmap sepalWi l)
   (f $ fmap petalLe l)
   (f $ fmap petalWi l)
-    
+
 mean :: [Float] -> Float
 mean l = (sum l) / (fromIntegral $ length l)
 
@@ -354,9 +354,9 @@ greeting :: IO (Timestamped String)
 greeting = do
   t <- getCurrentTime
   x <- pure (Timestamped t t ())
-  delay (2.5 :: Double)
+  threadDelay (2500000)
   x & stamp .! "hello, world!"
-  
+
 
 newtype Box a = Box { openBox :: a }
 
@@ -386,4 +386,3 @@ places =
 -- Main
 main :: IO ()
 main = return ()
-
