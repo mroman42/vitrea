@@ -99,8 +99,8 @@ street = mkLens viewStreet updateStreet
 city :: Lens String Address
 city = mkLens city' (\x y -> x {city' = y})
 
-address :: Prism Address String
-address = mkPrism matchAddress buildAddress
+asAddress :: Prism Address String
+asAddress = mkPrism matchAddress buildAddress
   where
     buildAddress :: Address -> String
     buildAddress (Address s t c) = s ++ ", " ++ t ++ ", " ++ c
@@ -354,7 +354,7 @@ greeting :: IO (Timestamped String)
 greeting = do
   t <- getCurrentTime
   x <- pure (Timestamped t t ())
-  threadDelay (2500000)
+  threadDelay (2500000) -- microseconds
   x & stamp .! "hello, world!"
 
 
