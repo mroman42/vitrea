@@ -353,9 +353,9 @@ stamp = mkMonadicLens @IO viewContents updateStamp
 greeting :: IO (Timestamped String)
 greeting = do
   t <- getCurrentTime
-  x <- pure (Timestamped t t ())
+  x <- pure (Timestamped t t "What is the answer?")
   threadDelay (2500000) -- microseconds
-  x & stamp .! "hello, world!"
+  x & stamp .! "42"
 
 
 newtype Box a = Box { openBox :: a }
