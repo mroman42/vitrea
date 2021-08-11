@@ -44,7 +44,7 @@ import Data.Functor.Identity
 import Data.Functor.Compose
 import Data.Void
 import Control.Monad
-import Control.Time
+import Control.Concurrent
 import Data.Char
 import Data.List
 import Data.List.Split
@@ -99,8 +99,8 @@ street = mkLens viewStreet updateStreet
 city :: Lens String Address
 city = mkLens city' (\x y -> x {city' = y})
 
-address :: Prism Address String
-address = mkPrism matchAddress buildAddress
+asAddress :: Prism Address String
+asAddress = mkPrism matchAddress buildAddress
   where
     buildAddress :: Address -> String
     buildAddress (Address s t c) = s ++ ", " ++ t ++ ", " ++ c
@@ -153,7 +153,7 @@ instance Show Species where
 
 instance Show Measurements where
   show (Measurements sl sw pl pw) =
-    "(" ++ show sl ++ ", " ++ show sw ++ ", " 
+    "(" ++ show sl ++ ", " ++ show sw ++ ", "
         ++ show pl ++ ", " ++ show pw ++ ")"
 
 
@@ -174,7 +174,7 @@ aggregate = mkKaleidoscope $ \f l -> Measurements
   (f $ fmap sepalWi l)
   (f $ fmap petalLe l)
   (f $ fmap petalWi l)
-    
+
 mean :: [Float] -> Float
 mean l = (sum l) / (fromIntegral $ length l)
 
@@ -353,10 +353,10 @@ stamp = mkMonadicLens @IO viewContents updateStamp
 greeting :: IO (Timestamped String)
 greeting = do
   t <- getCurrentTime
-  x <- pure (Timestamped t t ())
-  delay (2.5 :: Double)
-  x & stamp .! "hello, world!"
-  
+  x <- pure (Timestamped t t "What is the answer?")
+  threadDelay (2500000) -- microseconds
+  x & stamp .! "42"
+
 
 newtype Box a = Box { openBox :: a }
 
@@ -386,4 +386,3 @@ places =
 -- Main
 main :: IO ()
 main = return ()
-
