@@ -48,7 +48,7 @@ library
                      , TypeSynonymInstances
                      , UndecidableInstances
 
-  build-depends:       base ^>=4.12.0.0
+  build-depends:       base ^>=4.16.1.0
                      , mtl ^>=2.2.2
                      , profunctors
                      , split
