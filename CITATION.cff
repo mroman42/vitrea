@@ -1,12 +1,14 @@
 cff-version: 1.2.0
 message: "If you reference this software, please cite it as below."
 authors:
-- family-names: "Román"
-  given-names: "Mario"
-  orcid: "https://orcid.org/0000-0003-3158-1226"
 - family-names: "Milewski"
   given-names: "Bartosz"
   orcid: "https://orcid.org/0000-0001-9249-0104"
+- family-names: "Pillmore"
+  given-names: "Emily"
+- family-names: "Román"
+  given-names: "Mario"
+  orcid: "https://orcid.org/0000-0003-3158-1226"
 title: "Vitrea: a Profunctor Optics Library."
 version: 1.0.0
 date-released: 2020-01-15
